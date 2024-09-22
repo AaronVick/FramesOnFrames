@@ -78,7 +78,6 @@ export default function FrameNavigator() {
   const [currentFrameIndex, setCurrentFrameIndex] = useState(-1);  // Initialize with -1 for the opening screen
   const baseUrl = 'https://frames-on-frames.vercel.app';
 
-  // Correct placement of shareText
   const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
   const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
 
@@ -107,9 +106,9 @@ export default function FrameNavigator() {
         <meta name="description" content="Explore Farcaster frames created by @aaronv.eth" />
         <meta property="og:title" content="Aaron's Frames" />
         <meta property="og:description" content="Explore different interactive frames." />
-        <meta property="og:image" content="aarons_frames.png" /> <!-- Removed leading slash -->
+        <meta property="og:image" content="aarons_frames.png" />
         <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="aarons_frames.png" /> <!-- Removed leading slash -->
+        <meta property="fc:frame:image" content="aarons_frames.png" />
         <meta property="fc:frame:button:1" content="View Frames" />
         <meta property="fc:frame:button:2" content="Share" />
         <meta property="fc:frame:button:2:action" content="link" />
@@ -119,7 +118,7 @@ export default function FrameNavigator() {
       
       {currentFrameIndex === -1 ? (
         <div style={{ textAlign: 'center', backgroundColor: '#121212', color: '#FFFFFF', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-          <img src="/aarons_frames.png" alt="Aaron's Frames" style={{ maxWidth: '80%', marginBottom: '20px' }} />
+          <img src="aarons_frames.png" alt="Aaron's Frames" style={{ maxWidth: '80%', marginBottom: '20px' }} />
           <div>
             <button onClick={() => setCurrentFrameIndex(0)} style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>View Frames</button>
             <button onClick={handleShare} style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Share</button>
