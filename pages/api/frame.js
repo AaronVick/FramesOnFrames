@@ -24,11 +24,10 @@ export default async function handler(req, res) {
     } else if (buttonIndex === 3) {
       frameIndex = (frameIndex + 1) % frames.length;
     } else if (buttonIndex === 2 && frameIndex !== -1) {
-      // Redirect to our intermediate page
-      const redirectUrl = `${baseUrl}/redirect?index=${frameIndex}`;
+      // Direct redirect to the frame URL
+      const redirectUrl = frames[frameIndex].url;
       console.log('Redirecting to:', redirectUrl);
-      res.redirect(302, redirectUrl);
-      return;
+      return res.redirect(302, redirectUrl);
     }
 
     console.log('New frameIndex:', frameIndex);
@@ -49,26 +48,22 @@ export default async function handler(req, res) {
           <meta property="fc:frame" content="vNext" />
           <meta property="fc:frame:image" content="${imageUrl}" />
           <meta property="fc:frame:button:1" content="${frameIndex === -1 ? "View Frames" : "Previous"}" />
+          <meta property="fc:frame:button:2" content="${frameIndex === -1 ? "Share" : currentFrame.name}" />
+          <meta property="fc:frame:button:3" content="${frameIndex === -1 ? "" : "Next"}" />
+          <meta property="fc:frame:post_url" content="${baseUrl}/api/frame" />
+          <meta property="fc:frame:state" content="${frameIndex.toString()}" />
     `;
 
     if (frameIndex === -1) {
       const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
       const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
       html += `
-          <meta property="fc:frame:button:2" content="Share" />
           <meta property="fc:frame:button:2:action" content="link" />
           <meta property="fc:frame:button:2:target" content="${shareLink}" />
-      `;
-    } else {
-      html += `
-          <meta property="fc:frame:button:2" content="${currentFrame.name}" />
       `;
     }
 
     html += `
-          <meta property="fc:frame:button:3" content="${frameIndex === -1 ? "" : "Next"}" />
-          <meta property="fc:frame:post_url" content="${baseUrl}/api/frame" />
-          <meta property="fc:frame:state" content="${frameIndex.toString()}" />
         </head>
       </html>
     `;
@@ -90,6 +85,6 @@ export default async function handler(req, res) {
       </html>
     `;
     res.setHeader('Content-Type', 'text/html');
-    res.status(200).send(errorHtml);
+    res.status(200).send(html);
   }
 }
