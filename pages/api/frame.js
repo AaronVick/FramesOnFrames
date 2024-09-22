@@ -8,9 +8,12 @@ export default async function handler(req, res) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://frames-on-frames.vercel.app';
   const { untrustedData } = req.body;
   const buttonIndex = untrustedData?.buttonIndex;
+  
+  console.log('Received POST request:', { untrustedData, buttonIndex });
 
   try {
     let frameIndex = parseInt(untrustedData?.state || '-1');
+    console.log('Current frameIndex:', frameIndex);
     
     if (buttonIndex === 1) {
       if (frameIndex === -1) {
@@ -20,15 +23,24 @@ export default async function handler(req, res) {
       }
     } else if (buttonIndex === 3) {
       frameIndex = (frameIndex + 1) % frames.length;
-    } else if (buttonIndex === 2 && frameIndex !== -1) {
-      return res.status(302).setHeader('Location', frames[frameIndex].url).end();
+    } else if (buttonIndex === 2) {
+      if (frameIndex !== -1) {
+        console.log('Redirecting to:', frames[frameIndex].url);
+        return res.redirect(302, frames[frameIndex].url);
+      } else {
+        // Handle share action for the initial frame
+        const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
+        const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
+        return res.redirect(302, shareLink);
+      }
     }
 
-    const currentFrame = frameIndex === -1 ? null : frames[frameIndex];
-    const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
-    const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
+    console.log('New frameIndex:', frameIndex);
 
+    const currentFrame = frameIndex === -1 ? null : frames[frameIndex];
     const imageUrl = frameIndex === -1 ? `${baseUrl}/aarons_frames.png` : `${currentFrame.url}/${currentFrame.img}`;
+
+    console.log('Image URL:', imageUrl);
 
     const html = `
       <html>
@@ -40,13 +52,11 @@ export default async function handler(req, res) {
           <meta property="fc:frame:button:3" content="${frameIndex === -1 ? "" : "Next"}" />
           <meta property="fc:frame:post_url" content="${baseUrl}/api/frame" />
           <meta property="fc:frame:state" content="${frameIndex.toString()}" />
-          ${frameIndex === -1 ? `
-          <meta property="fc:frame:button:2:action" content="link" />
-          <meta property="fc:frame:button:2:target" content="${shareLink}" />
-          ` : ''}
         </head>
       </html>
     `;
+
+    console.log('Sending HTML response:', html);
 
     res.setHeader('Content-Type', 'text/html');
     res.status(200).send(html);
