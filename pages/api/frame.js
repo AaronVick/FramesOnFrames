@@ -24,10 +24,10 @@ export default async function handler(req, res) {
     } else if (buttonIndex === 3) {
       frameIndex = (frameIndex + 1) % frames.length;
     } else if (buttonIndex === 2 && frameIndex !== -1) {
-      // Redirect to the current frame's URL
-      const currentFrame = frames[frameIndex];
-      console.log('Redirecting to:', currentFrame.url);
-      res.redirect(302, currentFrame.url);
+      // Redirect to our intermediate page
+      const redirectUrl = `${baseUrl}/redirect?index=${frameIndex}`;
+      console.log('Redirecting to:', redirectUrl);
+      res.redirect(302, redirectUrl);
       return;
     }
 
