@@ -13,30 +13,25 @@ export default async function handler(req, res) {
 
   try {
     let frameIndex = parseInt(untrustedData?.state || '-1');
-    let subFrameState = untrustedData?.frameData || '';
-    console.log('Current frameIndex:', frameIndex, 'SubFrameState:', subFrameState);
+    console.log('Current frameIndex:', frameIndex);
     
-    if (frameIndex === -1 && buttonIndex === 1) {
-      // View Frames button clicked on the initial screen
-      frameIndex = 0;
-      subFrameState = '';
-    } else if (frameIndex >= 0) {
-      if (buttonIndex === 1) {
-        // Previous button
+    if (buttonIndex === 1) {
+      if (frameIndex === -1) {
+        frameIndex = 0;
+      } else {
         frameIndex = frameIndex === 0 ? frames.length - 1 : frameIndex - 1;
-        subFrameState = '';
-      } else if (buttonIndex === 3) {
-        // Next button
-        frameIndex = (frameIndex + 1) % frames.length;
-        subFrameState = '';
-      } else if (buttonIndex === 2) {
-        // Interact with current frame
-        // Here, we'll pass the button press to the individual frame
-        subFrameState += `${subFrameState ? ',' : ''}2`;
       }
+    } else if (buttonIndex === 3) {
+      frameIndex = (frameIndex + 1) % frames.length;
+    } else if (buttonIndex === 2 && frameIndex !== -1) {
+      // Redirect to the current frame's URL
+      const currentFrame = frames[frameIndex];
+      console.log('Redirecting to:', currentFrame.url);
+      res.redirect(302, currentFrame.url);
+      return;
     }
 
-    console.log('New frameIndex:', frameIndex, 'New SubFrameState:', subFrameState);
+    console.log('New frameIndex:', frameIndex);
 
     if (frameIndex >= frames.length) {
       console.error('Frame index out of bounds:', frameIndex);
@@ -74,16 +69,6 @@ export default async function handler(req, res) {
           <meta property="fc:frame:button:3" content="${frameIndex === -1 ? "" : "Next"}" />
           <meta property="fc:frame:post_url" content="${baseUrl}/api/frame" />
           <meta property="fc:frame:state" content="${frameIndex.toString()}" />
-          <meta property="fc:frame:image:aspect_ratio" content="1:1" />
-    `;
-
-    if (subFrameState) {
-      html += `
-          <meta property="fc:frame:state" content="${frameIndex},${subFrameState}" />
-      `;
-    }
-
-    html += `
         </head>
       </html>
     `;
