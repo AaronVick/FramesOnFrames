@@ -76,6 +76,11 @@ const frames = [
 
 export default function FrameNavigator() {
   const [currentFrameIndex, setCurrentFrameIndex] = useState(-1);  // Initialize with -1 for the opening screen
+  const baseUrl = 'https://frames-on-frames.vercel.app';
+
+  // Correct placement of shareText
+  const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
+  const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
 
   const handleNext = () => {
     setCurrentFrameIndex((prevIndex) => (prevIndex + 1) % frames.length);
@@ -92,12 +97,8 @@ export default function FrameNavigator() {
   };
 
   const handleShare = () => {
-    const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
-    const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent('https://your-vercel-url.com')}`;
     window.location.href = shareLink;
   };
-
-  const baseUrl = 'https://frames-on-frames.vercel.app';
 
   return (
     <div>
@@ -112,7 +113,7 @@ export default function FrameNavigator() {
         <meta property="fc:frame:button:1" content="View Frames" />
         <meta property="fc:frame:button:2" content="Share" />
         <meta property="fc:frame:button:2:action" content="link" />
-        <meta property="fc:frame:button:2:target" content={`https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`} />
+        <meta property="fc:frame:button:2:target" content={shareLink} />
         <meta property="fc:frame:post_url" content={`${baseUrl}/api/frame`} />
       </Head>
       
