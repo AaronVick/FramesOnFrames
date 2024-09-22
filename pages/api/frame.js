@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       frameIndex = (frameIndex + 1) % frames.length;
     } else if (buttonIndex === 2) {
       if (frameIndex !== -1 && frameIndex < frames.length) {
-        const redirectUrl = frames[frameIndex].url;
+        const redirectUrl = `${baseUrl}/redirect?index=${frameIndex}`;
         console.log('Redirecting to:', redirectUrl);
         res.setHeader('Location', redirectUrl);
         return res.status(302).end();
