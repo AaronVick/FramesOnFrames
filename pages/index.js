@@ -113,7 +113,7 @@ export default function FrameNavigator() {
         <meta property="fc:frame:button:2" content="Share" />
         <meta property="fc:frame:button:2:action" content="link" />
         <meta property="fc:frame:button:2:target" content={shareLink} />
-        <meta property="fc:frame:post_url" content={`${baseUrl}/api/frame`} />
+        {/* Removed the /api/frame reference */}
       </Head>
       
       {currentFrameIndex === -1 ? (
