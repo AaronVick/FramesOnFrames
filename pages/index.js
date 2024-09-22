@@ -97,7 +97,7 @@ export default function FrameNavigator() {
     window.location.href = shareLink;
   };
 
-  const baseUrl = 'https://your-vercel-url.com';
+  const baseUrl = 'https://frames-on-frames.vercel.app';
 
   return (
     <div>
