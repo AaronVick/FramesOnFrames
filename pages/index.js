@@ -107,9 +107,9 @@ export default function FrameNavigator() {
         <meta name="description" content="Explore Farcaster frames created by @aaronv.eth" />
         <meta property="og:title" content="Aaron's Frames" />
         <meta property="og:description" content="Explore different interactive frames." />
-        <meta property="og:image" content="/aarons_frames.png" />
+        <meta property="og:image" content="aarons_frames.png" /> <!-- Removed leading slash -->
         <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="/aarons_frames.png" />
+        <meta property="fc:frame:image" content="aarons_frames.png" /> <!-- Removed leading slash -->
         <meta property="fc:frame:button:1" content="View Frames" />
         <meta property="fc:frame:button:2" content="Share" />
         <meta property="fc:frame:button:2:action" content="link" />
