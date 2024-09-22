@@ -15,15 +15,12 @@ export default async function handler(req, res) {
     let frameIndex = parseInt(untrustedData?.state || '-1');
     console.log('Current frameIndex:', frameIndex);
     
-    if (buttonIndex === 1) {
-      if (frameIndex === -1) {
-        frameIndex = 0;
-      } else {
-        frameIndex = frameIndex === 0 ? frames.length - 1 : frameIndex - 1;
-      }
-    } else if (buttonIndex === 3) {
+    // Navigate frames based on button presses
+    if (buttonIndex === 1) {  // Previous button
+      frameIndex = frameIndex === 0 ? frames.length - 1 : frameIndex - 1;
+    } else if (buttonIndex === 3) {  // Next button
       frameIndex = (frameIndex + 1) % frames.length;
-    } else if (buttonIndex === 2 && frameIndex !== -1 && frameIndex < frames.length) {
+    } else if (buttonIndex === 2 && frameIndex !== -1 && frameIndex < frames.length) {  // Visit frame
       const targetUrl = frames[frameIndex].url;
       console.log('Redirecting to:', targetUrl);
       res.redirect(302, targetUrl);
@@ -32,15 +29,8 @@ export default async function handler(req, res) {
 
     console.log('New frameIndex:', frameIndex);
 
-    if (frameIndex >= frames.length) {
-      console.error('Frame index out of bounds:', frameIndex);
-      frameIndex = 0;
-    }
-
     const currentFrame = frameIndex === -1 ? null : frames[frameIndex];
     const imageUrl = frameIndex === -1 ? `${baseUrl}/aarons_frames.png` : `${currentFrame.url}/${currentFrame.img}`;
-
-    console.log('Image URL:', imageUrl);
 
     const html = `
       <html>
@@ -55,8 +45,6 @@ export default async function handler(req, res) {
         </head>
       </html>
     `;
-
-    console.log('Sending HTML response:', html);
 
     res.setHeader('Content-Type', 'text/html');
     res.status(200).send(html);
