@@ -1,80 +1,15 @@
-const frames = [
-  {
-    name: "Empower Goal",
-    img: "empower.png",  
-    url: "https://empower-goal-tracker.vercel.app"
-  },
-  {
-    name: "War - Card Game",
-    img: "cardwar.png",
-    url: "https://war-of-cards-seven.vercel.app"
-  },
-  {
-    name: "Guess Who Said It",
-    img: "guessQuote.png",
-    url: "https://guess-the-quote-mauve.vercel.app"
-  },
-  {
-    name: "Plot Twist - Guess the Movie",
-    img: "plotTwist.png",
-    url: "https://plot-twist-nine.vercel.app"
-  },
-  {
-    name: "This Day in History",
-    img: "onthisday.png",
-    url: "https://time-capsule-jade.vercel.app"
-  },
-  {
-    name: "Flowers Galore",
-    img: "flower_flip_img.png",
-    url: "https://flower-flip.vercel.app"
-  },
-  {
-    name: "Dad Jokes",
-    img: "dad_jokes.png",
-    url: "https://dad-jokes-vert.vercel.app"
-  },
-  {
-    name: "Your Daily Inspo",
-    img: "zen.png",
-    url: "https://daily-inspo.vercel.app"
-  },
-  {
-    name: "Find Frens - Meme Channel",
-    img: "success.png",
-    url: "https://find-meme-frens.vercel.app"
-  },
-  {
-    name: "Trivia Game",
-    img: "trivia.png",
-    url: "https://farcaster-trivia-one.vercel.app"
-  },
-  {
-    name: "Fun Facts",
-    img: "funfacts.png",
-    url: "https://funfacts-xi.vercel.app"
-  },
-  {
-    name: "Find Frens - Success Channel",
-    img: "success.png",
-    url: "https://success-omega.vercel.app"
-  },
-  {
-    name: "Coindesk News",
-    img: "coindeskrss.png",
-    url: "https://coin-desk-news-frame.vercel.app"
-  },
-  {
-    name: "AP News Headlines",
-    img: "trending-news-placeholder.png",
-    url: "https://ap-news.vercel.app"
-  }
-];
+import { frames } from '../../utils/frameData';
 
-export default function handler(req, res) {
-  if (req.method === 'POST') {
-    const { untrustedData } = req.body;
-    const buttonIndex = untrustedData?.buttonIndex;
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://frames-on-frames.vercel.app';
+  const { untrustedData } = req.body;
+  const buttonIndex = untrustedData?.buttonIndex;
+
+  try {
     let frameIndex = parseInt(untrustedData?.state || '-1');
     
     if (buttonIndex === 1) {
@@ -89,26 +24,43 @@ export default function handler(req, res) {
       return res.status(302).setHeader('Location', frames[frameIndex].url).end();
     }
 
-    const baseUrl = 'https://frames-on-frames.vercel.app';
     const currentFrame = frameIndex === -1 ? null : frames[frameIndex];
+    const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
+    const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
 
-    const frameMetadata = {
-      version: 'vNext',
-      image: frameIndex === -1 ? `${baseUrl}/aarons_frames.png` : `${baseUrl}/${currentFrame.img}`,
-      buttons: [
-        { label: frameIndex === -1 ? "View Frames" : "Previous" },
-        { label: frameIndex === -1 ? "Share" : (currentFrame ? currentFrame.name : "") },
-        { label: frameIndex === -1 ? "" : "Next" }
-      ],
-      postUrl: `${baseUrl}/api/frame`,
-      state: frameIndex.toString()
-    };
+    const html = `
+      <html>
+        <head>
+          <meta property="fc:frame" content="vNext" />
+          <meta property="fc:frame:image" content="${frameIndex === -1 ? `${baseUrl}/aarons_frames.png` : `${baseUrl}/${currentFrame.img}`}" />
+          <meta property="fc:frame:button:1" content="${frameIndex === -1 ? "View Frames" : "Previous"}" />
+          <meta property="fc:frame:button:2" content="${frameIndex === -1 ? "Share" : currentFrame ? currentFrame.name : ""}" />
+          <meta property="fc:frame:button:3" content="${frameIndex === -1 ? "" : "Next"}" />
+          <meta property="fc:frame:post_url" content="${baseUrl}/api/frame" />
+          <meta property="fc:frame:state" content="${frameIndex.toString()}" />
+          ${frameIndex === -1 ? `
+          <meta property="fc:frame:button:2:action" content="link" />
+          <meta property="fc:frame:button:2:target" content="${shareLink}" />
+          ` : ''}
+        </head>
+      </html>
+    `;
 
-    res.status(200).json({
-      flags: ["FULL_FRAME"],
-      frame: frameMetadata
-    });
-  } else {
-    res.status(405).json({ error: 'Method Not Allowed' });
+    res.setHeader('Content-Type', 'text/html');
+    res.status(200).send(html);
+  } catch (error) {
+    console.error('Error in frame handler:', error);
+    const errorHtml = `
+      <html>
+        <head>
+          <meta property="fc:frame" content="vNext" />
+          <meta property="fc:frame:image" content="${baseUrl}/api/og?message=${encodeURIComponent('An error occurred. Please try again.')}" />
+          <meta property="fc:frame:button:1" content="Try Again" />
+          <meta property="fc:frame:post_url" content="${baseUrl}/api/frame" />
+        </head>
+      </html>
+    `;
+    res.setHeader('Content-Type', 'text/html');
+    res.status(200).send(errorHtml);
   }
 }
