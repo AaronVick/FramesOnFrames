@@ -1,4 +1,5 @@
 import { frames } from '../../utils/frameData';
+import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -23,19 +24,23 @@ export default async function handler(req, res) {
       }
     } else if (buttonIndex === 3) {
       frameIndex = (frameIndex + 1) % frames.length;
-    } else if (buttonIndex === 2) {
-      if (frameIndex !== -1 && frameIndex < frames.length) {
-        const redirectUrl = `${baseUrl}/redirect?index=${frameIndex}`;
-        console.log('Redirecting to:', redirectUrl);
-        res.setHeader('Location', redirectUrl);
-        return res.status(302).end();
-      } else {
-        // Handle share action for the initial frame
-        const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
-        const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
-        console.log('Sharing link:', shareLink);
-        res.setHeader('Location', shareLink);
-        return res.status(302).end();
+    } else if (buttonIndex === 2 && frameIndex !== -1 && frameIndex < frames.length) {
+      const targetUrl = frames[frameIndex].url;
+      console.log('Fetching content from:', targetUrl);
+      
+      try {
+        const response = await fetch(targetUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const content = await response.text();
+        console.log('Fetched content successfully');
+        res.setHeader('Content-Type', 'text/html');
+        return res.status(200).send(content);
+      } catch (fetchError) {
+        console.error('Error fetching frame content:', fetchError);
+        // If fetch fails, fall back to our own frame
+        frameIndex = frameIndex;
       }
     }
 
