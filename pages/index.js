@@ -4,72 +4,72 @@ import Head from 'next/head';
 const frames = [
   {
     name: "Empower Goal",
-    img: "/empower.png",  
+    img: "empower.png",  
     url: "https://empower-goal-tracker.vercel.app"
   },
   {
     name: "War - Card Game",
-    img: "/cardwar.png",
+    img: "cardwar.png",
     url: "https://war-of-cards-seven.vercel.app"
   },
   {
     name: "Guess Who Said It",
-    img: "/guessQuote.png",
+    img: "guessQuote.png",
     url: "https://guess-the-quote-mauve.vercel.app"
   },
   {
     name: "Plot Twist - Guess the Movie",
-    img: "/plotTwist.png",
+    img: "plotTwist.png",
     url: "https://plot-twist-nine.vercel.app"
   },
   {
     name: "This Day in History",
-    img: "/onthisday.png",
+    img: "onthisday.png",
     url: "https://time-capsule-jade.vercel.app"
   },
   {
     name: "Flowers Galore",
-    img: "/flower_flip_img.png",
+    img: "flower_flip_img.png",
     url: "https://flower-flip.vercel.app"
   },
   {
     name: "Dad Jokes",
-    img: "/dad_jokes.png",
+    img: "dad_jokes.png",
     url: "https://dad-jokes-vert.vercel.app"
   },
   {
     name: "Your Daily Inspo",
-    img: "/zen.png",
+    img: "zen.png",
     url: "https://daily-inspo.vercel.app"
   },
   {
     name: "Find Frens - Meme Channel",
-    img: "/success.png",
+    img: "success.png",
     url: "https://find-meme-frens.vercel.app"
   },
   {
     name: "Trivia Game",
-    img: "/rivia.png",
+    img: "rivia.png",
     url: "https://farcaster-trivia-one.vercel.app"
   },
   {
     name: "Fun Facts",
-    img: "/funfacts.png",
+    img: "funfacts.png",
     url: "https://funfacts-xi.vercel.app"
   },
   {
     name: "Find Frens - Success Channel",
-    img: "/success.png",
+    img: "success.png",
     url: "https://success-omega.vercel.app"
   },
   {
     name: "Coindesk News",
-    img: "/coindeskrss.png",
+    img: "coindeskrss.png",
     url: "https://coin-desk-news-frame.vercel.app"
   },
   {
     name: "AP News Headlines",
-    img: "/trending-news-placeholder.png",
+    img: "trending-news-placeholder.png",
     url: "https://ap-news.vercel.app"
   }
 ];
@@ -106,9 +106,9 @@ export default function FrameNavigator() {
         <meta name="description" content="Explore Farcaster frames created by @aaronv.eth" />
         <meta property="og:title" content="Aaron's Frames" />
         <meta property="og:description" content="Explore different interactive frames." />
-        <meta property="og:image" content="aarons_frames.png" />
+        <meta property="og:image" content={`${baseUrl}/aarons_frames.png`} /> {/* Updated */}
         <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="aarons_frames.png" />
+        <meta property="fc:frame:image" content={`${baseUrl}/aarons_frames.png`} /> {/* Updated */}
         <meta property="fc:frame:button:1" content="View Frames" />
         <meta property="fc:frame:button:2" content="Share" />
         <meta property="fc:frame:button:2:action" content="link" />
@@ -118,7 +118,7 @@ export default function FrameNavigator() {
       
       {currentFrameIndex === -1 ? (
         <div style={{ textAlign: 'center', backgroundColor: '#121212', color: '#FFFFFF', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-          <img src="aarons_frames.png" alt="Aaron's Frames" style={{ maxWidth: '80%', marginBottom: '20px' }} />
+          <img src={`${baseUrl}/aarons_frames.png`} alt="Aaron's Frames" style={{ maxWidth: '80%', marginBottom: '20px' }} /> {/* Updated */}
           <div>
             <button onClick={() => setCurrentFrameIndex(0)} style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>View Frames</button>
             <button onClick={handleShare} style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Share</button>
@@ -126,7 +126,7 @@ export default function FrameNavigator() {
         </div>
       ) : (
         <div style={{ textAlign: 'center', backgroundColor: '#121212', color: '#FFFFFF', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-          <img src={frames[currentFrameIndex].img} alt={frames[currentFrameIndex].name} style={{ maxWidth: '80%', marginBottom: '20px' }} />
+          <img src={`${baseUrl}/${frames[currentFrameIndex].img}`} alt={frames[currentFrameIndex].name} style={{ maxWidth: '80%', marginBottom: '20px' }} /> {/* Updated */}
           <div>
             <button onClick={handlePrevious} style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Previous</button>
             <button onClick={handleVisitFrame} style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Go to {frames[currentFrameIndex].name}</button>
