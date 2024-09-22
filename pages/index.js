@@ -49,7 +49,7 @@ const frames = [
   },
   {
     name: "Trivia Game",
-    img: "rivia.png",
+    img: "trivia.png",
     url: "https://farcaster-trivia-one.vercel.app"
   },
   {
@@ -74,17 +74,11 @@ const frames = [
   }
 ];
 
-export default function FrameNavigator({ frameIndex }) {
+export default function FrameNavigator({ frameIndex = -1 }) {
   const baseUrl = 'https://frames-on-frames.vercel.app';
 
   const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
   const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
-
-  // Helper function to get next frame index
-  const getNextIndex = (current) => (current + 1) % frames.length;
-
-  // Helper function to get previous frame index
-  const getPreviousIndex = (current) => (current === 0 ? frames.length - 1 : current - 1);
 
   const currentFrame = frameIndex === -1 ? null : frames[frameIndex];
 
@@ -112,38 +106,21 @@ export default function FrameNavigator({ frameIndex }) {
           frameIndex === -1 ? "" : "Next"
         } />
         <meta property="fc:frame:post_url" content={`${baseUrl}/api/frame`} />
-        <meta property="fc:frame:input:text" content={frameIndex.toString()} />
+        <meta property="fc:frame:state" content={frameIndex.toString()} />
       </Head>
       
       <div style={{ textAlign: 'center', backgroundColor: '#121212', color: '#FFFFFF', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-        {frameIndex === -1 ? (
-          <>
-            <img src={`${baseUrl}/aarons_frames.png`} alt="Aaron's Frames" style={{ maxWidth: '80%', marginBottom: '20px' }} />
-            <div>
-              <button style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>View Frames</button>
-              <button style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Share</button>
-            </div>
-          </>
-        ) : (
-          <>
-            <img src={`${baseUrl}/${currentFrame.img}`} alt={currentFrame.name} style={{ maxWidth: '80%', marginBottom: '20px' }} />
-            <div>
-              <button style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Previous</button>
-              <button style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Go to {currentFrame.name}</button>
-              <button style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Next</button>
-            </div>
-          </>
-        )}
+        <img 
+          src={frameIndex === -1 ? `${baseUrl}/aarons_frames.png` : `${baseUrl}/${currentFrame.img}`} 
+          alt={frameIndex === -1 ? "Aaron's Frames" : currentFrame.name} 
+          style={{ maxWidth: '80%', marginBottom: '20px' }} 
+        />
       </div>
     </div>
   );
 }
 
 export async function getServerSideProps(context) {
-  // Extract frameIndex from query parameters or set to -1 if not present
   const frameIndex = parseInt(context.query.frameIndex || '-1');
-  
-  return { 
-    props: { frameIndex } 
-  };
+  return { props: { frameIndex } };
 }
