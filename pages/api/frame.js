@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   const { untrustedData } = req.body;
   const buttonIndex = untrustedData?.buttonIndex;
   
-  console.log('Received POST request:', { untrustedData, buttonIndex });
+  console.log('Received POST request:', JSON.stringify({ untrustedData, buttonIndex }, null, 2));
 
   try {
     let frameIndex = parseInt(untrustedData?.state || '-1');
@@ -24,18 +24,27 @@ export default async function handler(req, res) {
     } else if (buttonIndex === 3) {
       frameIndex = (frameIndex + 1) % frames.length;
     } else if (buttonIndex === 2) {
-      if (frameIndex !== -1) {
-        console.log('Redirecting to:', frames[frameIndex].url);
-        return res.redirect(302, frames[frameIndex].url);
+      if (frameIndex !== -1 && frameIndex < frames.length) {
+        const redirectUrl = frames[frameIndex].url;
+        console.log('Redirecting to:', redirectUrl);
+        res.setHeader('Location', redirectUrl);
+        return res.status(302).end();
       } else {
         // Handle share action for the initial frame
         const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
         const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
-        return res.redirect(302, shareLink);
+        console.log('Sharing link:', shareLink);
+        res.setHeader('Location', shareLink);
+        return res.status(302).end();
       }
     }
 
     console.log('New frameIndex:', frameIndex);
+
+    if (frameIndex >= frames.length) {
+      console.error('Frame index out of bounds:', frameIndex);
+      frameIndex = 0;
+    }
 
     const currentFrame = frameIndex === -1 ? null : frames[frameIndex];
     const imageUrl = frameIndex === -1 ? `${baseUrl}/aarons_frames.png` : `${currentFrame.url}/${currentFrame.img}`;
