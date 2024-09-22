@@ -1,5 +1,4 @@
 import { frames } from '../../utils/frameData';
-import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -26,22 +25,9 @@ export default async function handler(req, res) {
       frameIndex = (frameIndex + 1) % frames.length;
     } else if (buttonIndex === 2 && frameIndex !== -1 && frameIndex < frames.length) {
       const targetUrl = frames[frameIndex].url;
-      console.log('Fetching content from:', targetUrl);
-      
-      try {
-        const response = await fetch(targetUrl);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const content = await response.text();
-        console.log('Fetched content successfully');
-        res.setHeader('Content-Type', 'text/html');
-        return res.status(200).send(content);
-      } catch (fetchError) {
-        console.error('Error fetching frame content:', fetchError);
-        // If fetch fails, fall back to our own frame
-        frameIndex = frameIndex;
-      }
+      console.log('Redirecting to:', targetUrl);
+      res.redirect(302, targetUrl);
+      return;
     }
 
     console.log('New frameIndex:', frameIndex);
