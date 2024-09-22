@@ -74,34 +74,19 @@ const frames = [
   }
 ];
 
-export default function FrameNavigator() {
-  const [currentFrameIndex, setCurrentFrameIndex] = useState(-1);  // Initialize with -1 for the opening screen
+export default function FrameNavigator({ frameIndex }) {
   const baseUrl = 'https://frames-on-frames.vercel.app';
 
   const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
   const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
 
-  const handleNext = () => {
-    console.log('Navigating to next frame');
-    setCurrentFrameIndex((prevIndex) => (prevIndex + 1) % frames.length);
-  };
+  // Helper function to get next frame index
+  const getNextIndex = (current) => (current + 1) % frames.length;
 
-  const handlePrevious = () => {
-    console.log('Navigating to previous frame');
-    setCurrentFrameIndex((prevIndex) =>
-      prevIndex === 0 ? frames.length - 1 : prevIndex - 1
-    );
-  };
+  // Helper function to get previous frame index
+  const getPreviousIndex = (current) => (current === 0 ? frames.length - 1 : current - 1);
 
-  const handleVisitFrame = () => {
-    console.log(`Visiting frame: ${frames[currentFrameIndex].name}, URL: ${frames[currentFrameIndex].url}`);
-    window.location.href = frames[currentFrameIndex].url;
-  };
-
-  const handleShare = () => {
-    console.log('Sharing frame');
-    window.location.href = shareLink;
-  };
+  const currentFrame = frameIndex === -1 ? null : frames[frameIndex];
 
   return (
     <div>
@@ -112,31 +97,53 @@ export default function FrameNavigator() {
         <meta property="og:description" content="Explore different interactive frames." />
         <meta property="og:image" content={`${baseUrl}/aarons_frames.png`} />
         <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content={`${baseUrl}/aarons_frames.png`} />
-        <meta property="fc:frame:button:1" content="View Frames" />
-        <meta property="fc:frame:button:2" content="Share" />
-        <meta property="fc:frame:button:2:action" content="link" />
-        <meta property="fc:frame:button:2:target" content={shareLink} />
+        <meta property="fc:frame:image" content={
+          frameIndex === -1
+            ? `${baseUrl}/aarons_frames.png`
+            : `${baseUrl}/${currentFrame.img}`
+        } />
+        <meta property="fc:frame:button:1" content={
+          frameIndex === -1 ? "View Frames" : "Previous"
+        } />
+        <meta property="fc:frame:button:2" content={
+          frameIndex === -1 ? "Share" : currentFrame ? currentFrame.name : ""
+        } />
+        <meta property="fc:frame:button:3" content={
+          frameIndex === -1 ? "" : "Next"
+        } />
+        <meta property="fc:frame:post_url" content={`${baseUrl}/api/frame`} />
+        <meta property="fc:frame:input:text" content={frameIndex.toString()} />
       </Head>
       
-      {currentFrameIndex === -1 ? (
-        <div style={{ textAlign: 'center', backgroundColor: '#121212', color: '#FFFFFF', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-          <img src={`${baseUrl}/aarons_frames.png`} alt="Aaron's Frames" style={{ maxWidth: '80%', marginBottom: '20px' }} />
-          <div>
-            <button onClick={() => setCurrentFrameIndex(0)} style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>View Frames</button>
-            <button onClick={handleShare} style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Share</button>
-          </div>
-        </div>
-      ) : (
-        <div style={{ textAlign: 'center', backgroundColor: '#121212', color: '#FFFFFF', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-          <img src={`${baseUrl}/${frames[currentFrameIndex].img}`} alt={frames[currentFrameIndex].name} style={{ maxWidth: '80%', marginBottom: '20px' }} />
-          <div>
-            <button onClick={handlePrevious} style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Previous</button>
-            <button onClick={handleVisitFrame} style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Go to {frames[currentFrameIndex].name}</button>
-            <button onClick={handleNext} style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Next</button>
-          </div>
-        </div>
-      )}
+      <div style={{ textAlign: 'center', backgroundColor: '#121212', color: '#FFFFFF', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        {frameIndex === -1 ? (
+          <>
+            <img src={`${baseUrl}/aarons_frames.png`} alt="Aaron's Frames" style={{ maxWidth: '80%', marginBottom: '20px' }} />
+            <div>
+              <button style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>View Frames</button>
+              <button style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Share</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <img src={`${baseUrl}/${currentFrame.img}`} alt={currentFrame.name} style={{ maxWidth: '80%', marginBottom: '20px' }} />
+            <div>
+              <button style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Previous</button>
+              <button style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Go to {currentFrame.name}</button>
+              <button style={{ margin: '10px', padding: '10px', fontSize: '16px', cursor: 'pointer' }}>Next</button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  // Extract frameIndex from query parameters or set to -1 if not present
+  const frameIndex = parseInt(context.query.frameIndex || '-1');
+  
+  return { 
+    props: { frameIndex } 
+  };
 }
