@@ -28,11 +28,13 @@ export default async function handler(req, res) {
     const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
     const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
 
+    const imageUrl = frameIndex === -1 ? `${baseUrl}/aarons_frames.png` : `${currentFrame.url}/${currentFrame.img}`;
+
     const html = `
       <html>
         <head>
           <meta property="fc:frame" content="vNext" />
-          <meta property="fc:frame:image" content="${frameIndex === -1 ? `${baseUrl}/aarons_frames.png` : `${baseUrl}/${currentFrame.img}`}" />
+          <meta property="fc:frame:image" content="${imageUrl}" />
           <meta property="fc:frame:button:1" content="${frameIndex === -1 ? "View Frames" : "Previous"}" />
           <meta property="fc:frame:button:2" content="${frameIndex === -1 ? "Share" : currentFrame ? currentFrame.name : ""}" />
           <meta property="fc:frame:button:3" content="${frameIndex === -1 ? "" : "Next"}" />
@@ -54,7 +56,7 @@ export default async function handler(req, res) {
       <html>
         <head>
           <meta property="fc:frame" content="vNext" />
-          <meta property="fc:frame:image" content="${baseUrl}/api/og?message=${encodeURIComponent('An error occurred. Please try again.')}" />
+          <meta property="fc:frame:image" content="${baseUrl}/error.png" />
           <meta property="fc:frame:button:1" content="Try Again" />
           <meta property="fc:frame:post_url" content="${baseUrl}/api/frame" />
         </head>
