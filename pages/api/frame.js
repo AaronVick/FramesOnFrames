@@ -26,8 +26,17 @@ export default async function handler(req, res) {
     } else if (buttonIndex === 2 && frameIndex !== -1) {
       // Direct redirect to the frame URL
       const redirectUrl = frames[frameIndex].url;
-      console.log('Redirecting to:', redirectUrl);
-      return res.redirect(302, redirectUrl);
+      console.log('Attempting to redirect to:', redirectUrl);
+      try {
+        res.writeHead(302, { Location: redirectUrl });
+        res.end();
+        console.log('Redirect successful');
+        return;
+      } catch (redirectError) {
+        console.error('Error during redirect:', redirectError);
+        // If redirect fails, fall back to showing the frame
+        frameIndex = frameIndex;
+      }
     }
 
     console.log('New frameIndex:', frameIndex);
@@ -85,6 +94,6 @@ export default async function handler(req, res) {
       </html>
     `;
     res.setHeader('Content-Type', 'text/html');
-    res.status(200).send(html);
+    res.status(200).send(errorHtml);
   }
 }
