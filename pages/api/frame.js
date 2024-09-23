@@ -30,8 +30,8 @@ export default async function handler(req, res) {
         res.end();
         return;
       } else {
-        // Redirect to frame URL
-        const redirectUrl = frames[frameIndex].url;
+        // Redirect to our intermediate page
+        const redirectUrl = `${baseUrl}/redirect?index=${frameIndex}`;
         console.log('Redirecting to:', redirectUrl);
         res.writeHead(302, { Location: redirectUrl });
         res.end();

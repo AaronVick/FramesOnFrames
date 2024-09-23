@@ -63,10 +63,5 @@ export const frames = [
       name: "Coindesk News",
       img: "coindeskrss.png",
       url: "https://coin-desk-news-frame.vercel.app"
-    },
-    {
-      name: "AP News Headlines",
-      img: "trending-news-placeholder.png",
-      url: "https://ap-news.vercel.app"
     }
   ];
