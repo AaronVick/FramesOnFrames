@@ -1,4 +1,5 @@
 import { frames } from '../../utils/frameData';
+import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -22,12 +23,14 @@ export default async function handler(req, res) {
       // Next button
       frameIndex = (frameIndex + 1) % frames.length;
     } else if (buttonIndex === 2 && frameIndex !== -1) {
-      // Redirect to the frame
-      const redirectUrl = frames[frameIndex].url;
-      console.log('Redirecting to:', redirectUrl);
-      res.writeHead(302, { Location: redirectUrl });
-      res.end();
-      return;
+      // Proxy mode: Fetch and embed the target frame's content
+      const targetFrame = frames[frameIndex];
+      const proxyResponse = await proxyFrame(targetFrame.url);
+      if (proxyResponse) {
+        res.setHeader('Content-Type', 'text/html');
+        return res.status(200).send(proxyResponse);
+      }
+      // If proxy fails, fall back to the main frame view
     }
 
     console.log('New frameIndex:', frameIndex);
@@ -81,5 +84,29 @@ export default async function handler(req, res) {
     `;
     res.setHeader('Content-Type', 'text/html');
     res.status(200).send(errorHtml);
+  }
+}
+
+async function proxyFrame(targetUrl) {
+  try {
+    const response = await fetch(targetUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    let html = await response.text();
+
+    // Modify the HTML to update relative URLs to absolute URLs
+    html = html.replace(/(href|src)="\/(?!\/)/g, `$1="${targetUrl}/`);
+
+    // Update the post_url to point back to our frame handler
+    html = html.replace(
+      /<meta property="fc:frame:post_url" content="[^"]*"/,
+      `<meta property="fc:frame:post_url" content="${process.env.NEXT_PUBLIC_BASE_URL}/api/frame"`
+    );
+
+    return html;
+  } catch (error) {
+    console.error('Error proxying frame:', error);
+    return null;
   }
 }
