@@ -17,15 +17,22 @@ export default async function handler(req, res) {
     
     if (buttonIndex === 1) {
       // Previous button
-      frameIndex = frameIndex <= 0 ? frames.length - 1 : frameIndex - 1;
+      frameIndex = frameIndex === -1 ? frames.length - 1 : (frameIndex - 1 + frames.length) % frames.length;
     } else if (buttonIndex === 3) {
       // Next button
-      frameIndex = (frameIndex + 1) % frames.length;
+      frameIndex = frameIndex === -1 ? 0 : (frameIndex + 1) % frames.length;
     } else if (buttonIndex === 2 && frameIndex !== -1) {
       // Redirect to the actual frame
-      const redirectUrl = frames[frameIndex].url;
-      console.log('Redirecting to:', redirectUrl);
-      res.writeHead(302, { Location: redirectUrl });
+      const targetFrame = frames[frameIndex];
+      const redirectUrl = new URL(targetFrame.url);
+      
+      // Add initial state if the frame requires it
+      if (targetFrame.initialState) {
+        redirectUrl.searchParams.append('state', encodeURIComponent(JSON.stringify(targetFrame.initialState)));
+      }
+      
+      console.log('Redirecting to:', redirectUrl.toString());
+      res.writeHead(302, { Location: redirectUrl.toString() });
       res.end();
       return;
     }
