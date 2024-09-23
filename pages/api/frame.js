@@ -1,4 +1,5 @@
 import { frames } from '../../utils/frameData';
+import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -16,25 +17,17 @@ export default async function handler(req, res) {
     console.log('Current frameIndex:', frameIndex);
     
     if (buttonIndex === 1) {
-      // Previous button
       frameIndex = frameIndex === -1 ? frames.length - 1 : (frameIndex - 1 + frames.length) % frames.length;
     } else if (buttonIndex === 3) {
-      // Next button
       frameIndex = frameIndex === -1 ? 0 : (frameIndex + 1) % frames.length;
     } else if (buttonIndex === 2 && frameIndex !== -1) {
-      // Redirect to the actual frame
       const targetFrame = frames[frameIndex];
-      const redirectUrl = new URL(targetFrame.url);
-      
-      // Add initial state if the frame requires it
-      if (targetFrame.initialState) {
-        redirectUrl.searchParams.append('state', encodeURIComponent(JSON.stringify(targetFrame.initialState)));
+      const frameResponse = await interactWithFrame(targetFrame);
+      if (frameResponse) {
+        res.setHeader('Content-Type', 'text/html');
+        return res.status(200).send(frameResponse);
       }
-      
-      console.log('Redirecting to:', redirectUrl.toString());
-      res.writeHead(302, { Location: redirectUrl.toString() });
-      res.end();
-      return;
+      // If interaction fails, fall back to the main frame view
     }
 
     console.log('New frameIndex:', frameIndex);
@@ -54,6 +47,8 @@ export default async function handler(req, res) {
           <meta property="fc:frame:button:3" content="${frameIndex === -1 ? "" : "Next"}" />
           <meta property="fc:frame:post_url" content="${baseUrl}/api/frame" />
           <meta property="fc:frame:state" content="${frameIndex.toString()}" />
+        </head>
+      </html>
     `;
 
     if (frameIndex === -1) {
@@ -64,11 +59,6 @@ export default async function handler(req, res) {
           <meta property="fc:frame:button:2:target" content="${shareLink}" />
       `;
     }
-
-    html += `
-        </head>
-      </html>
-    `;
 
     console.log('Sending HTML response:', html);
 
@@ -88,5 +78,51 @@ export default async function handler(req, res) {
     `;
     res.setHeader('Content-Type', 'text/html');
     res.status(200).send(errorHtml);
+  }
+}
+
+async function interactWithFrame(frame) {
+  try {
+    // First, fetch the frame's initial HTML
+    const initialResponse = await fetch(frame.url);
+    if (!initialResponse.ok) {
+      throw new Error(`HTTP error! status: ${initialResponse.status}`);
+    }
+    let html = await initialResponse.text();
+
+    // Extract the post_url from the HTML
+    const postUrlMatch = html.match(/<meta property="fc:frame:post_url" content="([^"]*)">/);
+    if (!postUrlMatch) {
+      throw new Error("Couldn't find post_url in frame HTML");
+    }
+    const postUrl = postUrlMatch[1];
+
+    // Extract the initial state from the HTML
+    const stateMatch = html.match(/<meta property="fc:frame:state" content="([^"]*)">/);
+    const initialState = stateMatch ? stateMatch[1] : '';
+
+    // Simulate a POST request to the frame's API
+    const apiResponse = await fetch(postUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        untrustedData: {
+          buttonIndex: 1,
+          state: initialState,
+        },
+      }),
+    });
+
+    if (!apiResponse.ok) {
+      throw new Error(`API HTTP error! status: ${apiResponse.status}`);
+    }
+
+    // Return the HTML response from the frame's API
+    return await apiResponse.text();
+  } catch (error) {
+    console.error('Error interacting with frame:', error);
+    return null;
   }
 }
