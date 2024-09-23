@@ -24,19 +24,24 @@ export default async function handler(req, res) {
     } else if (buttonIndex === 3) {
       frameIndex = (frameIndex + 1) % frames.length;
     } else if (buttonIndex === 2 && frameIndex !== -1) {
-      // Direct redirect to the frame URL
+      // Instead of redirecting, we'll show a debug frame
       const redirectUrl = frames[frameIndex].url;
-      console.log('Attempting to redirect to:', redirectUrl);
-      try {
-        res.writeHead(302, { Location: redirectUrl });
-        res.end();
-        console.log('Redirect successful');
-        return;
-      } catch (redirectError) {
-        console.error('Error during redirect:', redirectError);
-        // If redirect fails, fall back to showing the frame
-        frameIndex = frameIndex;
-      }
+      console.log('Debug: Would redirect to:', redirectUrl);
+      
+      const debugHtml = `
+        <html>
+          <head>
+            <meta property="fc:frame" content="vNext" />
+            <meta property="fc:frame:image" content="${baseUrl}/debug.png" />
+            <meta property="fc:frame:button:1" content="Go Back" />
+            <meta property="fc:frame:button:2" content="Try Redirect" />
+            <meta property="fc:frame:post_url" content="${baseUrl}/api/frame" />
+            <meta property="fc:frame:state" content="debug,${frameIndex}" />
+          </head>
+        </html>
+      `;
+      res.setHeader('Content-Type', 'text/html');
+      return res.status(200).send(debugHtml);
     }
 
     console.log('New frameIndex:', frameIndex);
@@ -44,6 +49,22 @@ export default async function handler(req, res) {
     if (frameIndex >= frames.length) {
       console.error('Frame index out of bounds:', frameIndex);
       frameIndex = 0;
+    }
+
+    // Check if we're in debug mode
+    if (untrustedData?.state?.startsWith('debug')) {
+      const [_, debugFrameIndex] = untrustedData.state.split(',');
+      frameIndex = parseInt(debugFrameIndex);
+      
+      if (buttonIndex === 2) {
+        // Attempt redirect
+        const redirectUrl = frames[frameIndex].url;
+        console.log('Attempting redirect to:', redirectUrl);
+        res.writeHead(302, { Location: redirectUrl });
+        res.end();
+        return;
+      }
+      // If button 1 is pressed, we'll fall through to show the normal frame
     }
 
     const currentFrame = frameIndex === -1 ? null : frames[frameIndex];
