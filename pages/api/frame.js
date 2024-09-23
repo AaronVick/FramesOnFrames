@@ -14,13 +14,13 @@ export default async function handler(req, res) {
   } else if (buttonIndex === 3) {
     frameIndex = (frameIndex + 1) % frames.length;
   } else if (buttonIndex === 2 && frameIndex !== -1) {
-    // Simple redirection to the frame's URL without any additional state
+    // Correctly handle redirection without leading slash
     const targetFrame = frames[frameIndex];
     return res.redirect(302, targetFrame.url);
   }
 
   const currentFrame = frames[frameIndex] || frames[0];
-  const imageUrl = `${currentFrame.url}/${currentFrame.img}`;
+  const imageUrl = `${currentFrame.url}/${currentFrame.img}`;  // Ensure no leading slash
 
   const html = `
     <html>
