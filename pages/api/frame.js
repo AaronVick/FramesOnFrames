@@ -21,22 +21,13 @@ export default async function handler(req, res) {
     } else if (buttonIndex === 3) {
       // Next button
       frameIndex = (frameIndex + 1) % frames.length;
-    } else if (buttonIndex === 2) {
-      if (frameIndex === -1) {
-        // Share action for initial frame
-        const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
-        const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
-        res.writeHead(302, { Location: shareLink });
-        res.end();
-        return;
-      } else {
-        // Redirect to our intermediate page
-        const redirectUrl = `${baseUrl}/redirect?index=${frameIndex}`;
-        console.log('Redirecting to:', redirectUrl);
-        res.writeHead(302, { Location: redirectUrl });
-        res.end();
-        return;
-      }
+    } else if (buttonIndex === 2 && frameIndex !== -1) {
+      // Redirect to the frame
+      const redirectUrl = frames[frameIndex].url;
+      console.log('Redirecting to:', redirectUrl);
+      res.writeHead(302, { Location: redirectUrl });
+      res.end();
+      return;
     }
 
     console.log('New frameIndex:', frameIndex);
@@ -46,7 +37,7 @@ export default async function handler(req, res) {
 
     console.log('Image URL:', imageUrl);
 
-    const html = `
+    let html = `
       <html>
         <head>
           <meta property="fc:frame" content="vNext" />
@@ -56,6 +47,18 @@ export default async function handler(req, res) {
           <meta property="fc:frame:button:3" content="${frameIndex === -1 ? "" : "Next"}" />
           <meta property="fc:frame:post_url" content="${baseUrl}/api/frame" />
           <meta property="fc:frame:state" content="${frameIndex.toString()}" />
+    `;
+
+    if (frameIndex === -1) {
+      const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
+      const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
+      html += `
+          <meta property="fc:frame:button:2:action" content="link" />
+          <meta property="fc:frame:button:2:target" content="${shareLink}" />
+      `;
+    }
+
+    html += `
         </head>
       </html>
     `;
