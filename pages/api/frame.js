@@ -19,10 +19,10 @@ export default async function handler(req, res) {
     // Share button pressed
     const shareText = encodeURIComponent(frames[frameIndex].sharetext);
     const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(frames[frameIndex].url)}`;
-    return res.redirect(302, shareLink);  // Redirect to the share link
+    return res.redirect(302, shareLink);
   }
 
-  // Ensure no leading slashes
+  // Construct the image URL ensuring no leading or trailing slashes
   const currentFrame = frames[frameIndex] || frames[0];
   const imageUrl = `${currentFrame.url.replace(/\/$/, '')}/${currentFrame.img.replace(/^\//, '')}`;
 
