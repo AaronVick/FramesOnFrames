@@ -14,10 +14,9 @@ export default async function handler(req, res) {
   } else if (buttonIndex === 3) {
     frameIndex = (frameIndex + 1) % frames.length;
   } else if (buttonIndex === 2 && frameIndex !== -1) {
-    // Correct share logic
     const shareText = encodeURIComponent(frames[frameIndex].sharetext);
     const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(frames[frameIndex].url)}`;
-    return res.redirect(302, shareLink);  // Redirect to the correct share link
+    return res.redirect(302, shareLink);
   }
 
   const currentFrame = frames[frameIndex];
@@ -34,8 +33,6 @@ export default async function handler(req, res) {
         <meta property="fc:frame:button:3" content="Next" />
         <meta property="fc:frame:post_url" content="${baseUrl}/api/frame" />
         <meta property="fc:frame:state" content="${frameIndex}" />
-        <meta property="fc:frame:button:2:action" content="link" />
-        <meta property="fc:frame:button:2:target" content="${shareLink}" />
       </head>
       <body></body>
     </html>
