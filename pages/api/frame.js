@@ -9,24 +9,22 @@ export default async function handler(req, res) {
   const buttonIndex = untrustedData?.buttonIndex;
   let frameIndex = parseInt(untrustedData?.state || '-1');
 
-  // Handle navigation for Next/Previous buttons
   if (buttonIndex === 1) {
-    frameIndex = frameIndex === 0 ? frames.length - 1 : frameIndex - 1;
+    frameIndex = frameIndex === 0 ? frames.length - 1 : frameIndex - 1;  // Previous
   } else if (buttonIndex === 3) {
-    frameIndex = (frameIndex + 1) % frames.length;
+    frameIndex = (frameIndex + 1) % frames.length;  // Next
   } else if (buttonIndex === 2 && frameIndex !== -1) {
-    // Share button pressed
     const shareText = encodeURIComponent(frames[frameIndex].sharetext);
     const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(frames[frameIndex].url)}`;
-    return res.redirect(302, shareLink);
+    return res.redirect(302, shareLink);  // Redirect to the share link
   }
 
-  // Get the current frame data
   const currentFrame = frames[frameIndex] || frames[0];
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://frames-on-frames.vercel.app';
-  const imageUrl = `${baseUrl}/${currentFrame.img}`;
 
-  // Construct the HTML with the correct meta tags for Farcaster validation
+  // Insert a slash between the URL and image path if it's missing
+  const imageUrl = `${currentFrame.url.replace(/\/$/, '')}/${currentFrame.img.replace(/^\//, '')}`;
+
   const html = `
     <html>
       <head>
