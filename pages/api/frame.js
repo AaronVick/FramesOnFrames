@@ -22,9 +22,9 @@ export default async function handler(req, res) {
     return res.redirect(302, shareLink);  // Redirect to the share link
   }
 
-  // Construct the image URL ensuring no leading or trailing slashes
+  // Ignore `initialState` entries
   const currentFrame = frames[frameIndex] || frames[0];
-  const imageUrl = `${currentFrame.url.replace(/\/$/, '')}/${currentFrame.img.replace(/^\//, '')}`;  // No leading/trailing slashes
+  const imageUrl = `${currentFrame.url}/${currentFrame.img}`;
 
   const html = `
     <html>
