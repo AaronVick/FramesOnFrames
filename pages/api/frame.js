@@ -9,23 +9,20 @@ export default async function handler(req, res) {
   const buttonIndex = untrustedData?.buttonIndex;
   let frameIndex = parseInt(untrustedData?.state || '-1');
 
-  // Handle navigation
   if (buttonIndex === 1) {
     frameIndex = frameIndex === 0 ? frames.length - 1 : frameIndex - 1;  // Previous
   } else if (buttonIndex === 3) {
     frameIndex = (frameIndex + 1) % frames.length;  // Next
   } else if (buttonIndex === 2 && frameIndex !== -1) {
-    // Share link
     const shareText = encodeURIComponent(frames[frameIndex].sharetext);
     const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(frames[frameIndex].url)}`;
-    return res.redirect(302, shareLink);  // Redirect to the share link
+    return res.redirect(302, shareLink);
   }
 
-  // Get the current frame
   const currentFrame = frames[frameIndex] || frames[0];
-  const imageUrl = `${currentFrame.img}`;  // Use image directly from frameData
+  const imageUrl = `${currentFrame.img}`;  // Use the image from frameData
 
-  // Construct the HTML with proper Farcaster meta tags
+  // Ensure proper meta tags for Farcaster validation
   const html = `
     <html>
       <head>
@@ -37,6 +34,7 @@ export default async function handler(req, res) {
         <meta property="fc:frame:post_url" content="/api/frame" />
         <meta property="fc:frame:state" content="${frameIndex}" />
       </head>
+      <body></body>
     </html>
   `;
 
