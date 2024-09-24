@@ -9,22 +9,21 @@ export default async function handler(req, res) {
   const buttonIndex = untrustedData?.buttonIndex;
   let frameIndex = parseInt(untrustedData?.state || '-1');
 
+  // Handle navigation for Next/Previous
   if (buttonIndex === 1) {
-    // Previous button pressed
-    frameIndex = frameIndex === 0 ? frames.length - 1 : frameIndex - 1;
+    frameIndex = frameIndex === 0 ? frames.length - 1 : frameIndex - 1;  // Previous
   } else if (buttonIndex === 3) {
-    // Next button pressed
-    frameIndex = (frameIndex + 1) % frames.length;
+    frameIndex = (frameIndex + 1) % frames.length;  // Next
   } else if (buttonIndex === 2 && frameIndex !== -1) {
-    // Share button pressed
+    // Share frame
     const shareText = encodeURIComponent(frames[frameIndex].sharetext);
     const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(frames[frameIndex].url)}`;
     return res.redirect(302, shareLink);  // Redirect to the share link
   }
 
-  // Ignore `initialState` entries
+  // Handle image and frame URL generation without leading/trailing slashes
   const currentFrame = frames[frameIndex] || frames[0];
-  const imageUrl = `${currentFrame.url}/${currentFrame.img}`;
+  const imageUrl = `${currentFrame.url}/${currentFrame.img}`.replace(/\/\//g, '/');
 
   const html = `
     <html>
@@ -41,5 +40,5 @@ export default async function handler(req, res) {
   `;
 
   res.setHeader('Content-Type', 'text/html');
-  res.status(200).send(html);
+  return res.status(200).send(html);
 }
