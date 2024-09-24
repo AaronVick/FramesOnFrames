@@ -46,7 +46,7 @@ export const frames = [
     url: "https://dad-jokes-vert.vercel.app"
   },
   {
-    name: "Your Daily Inspo",
+    name: "Daily Inspo",
     img: "zen.png",
     sharetext: "Have you gotten your Daily Inspo yet?\n\nframe by @aaronv.eth",
     url: "https://daily-inspo.vercel.app"
