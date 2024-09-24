@@ -9,20 +9,24 @@ export default async function handler(req, res) {
   const buttonIndex = untrustedData?.buttonIndex;
   let frameIndex = parseInt(untrustedData?.state || '-1');
 
+  // Handle navigation for Next/Previous buttons
   if (buttonIndex === 1) {
-    frameIndex = frameIndex === 0 ? frames.length - 1 : frameIndex - 1;  // Previous
+    frameIndex = frameIndex === 0 ? frames.length - 1 : frameIndex - 1;
   } else if (buttonIndex === 3) {
-    frameIndex = (frameIndex + 1) % frames.length;  // Next
+    frameIndex = (frameIndex + 1) % frames.length;
   } else if (buttonIndex === 2 && frameIndex !== -1) {
+    // Share button pressed
     const shareText = encodeURIComponent(frames[frameIndex].sharetext);
     const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(frames[frameIndex].url)}`;
     return res.redirect(302, shareLink);
   }
 
+  // Get the current frame data
   const currentFrame = frames[frameIndex] || frames[0];
-  const imageUrl = `${currentFrame.img}`;  // Use the image from frameData
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://frames-on-frames.vercel.app';
+  const imageUrl = `${baseUrl}/${currentFrame.img}`;
 
-  // Ensure proper meta tags for Farcaster validation
+  // Construct the HTML with the correct meta tags for Farcaster validation
   const html = `
     <html>
       <head>
@@ -31,7 +35,7 @@ export default async function handler(req, res) {
         <meta property="fc:frame:button:1" content="Previous" />
         <meta property="fc:frame:button:2" content="Share ${currentFrame.name}" />
         <meta property="fc:frame:button:3" content="Next" />
-        <meta property="fc:frame:post_url" content="/api/frame" />
+        <meta property="fc:frame:post_url" content="${baseUrl}/api/frame" />
         <meta property="fc:frame:state" content="${frameIndex}" />
       </head>
       <body></body>
