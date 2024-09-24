@@ -55,7 +55,7 @@ export const frames = [
   },
   {
     name: "Trivia Game",
-    img: "rivia.png",
+    img: "trivia.png",
     sharetext: "How many trivia questions and you get right?\n\nframe by @aaronv.eth",
     url: "https://farcaster-trivia-one.vercel.app"
   },
