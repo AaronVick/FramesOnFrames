@@ -9,29 +9,25 @@ export const frames = [
     name: "War - Card Game",
     img: "cardwar.png",
     sharetext: "Play the classic card game War!\n\nframe by @aaronv.eth",
-    url: "https://war-of-cards-seven.vercel.app",
-    initialState: { stage: 'initial' }
+    url: "https://war-of-cards-seven.vercel.app"
   },
   {
     name: "Guess Who Said It",
     img: "guessQuote.png",
     sharetext: "Can you guess who said it?\n\nframe by @aaronv.eth",
-    url: "https://guess-the-quote-mauve.vercel.app",
-    initialState: { stage: 'initial' }
+    url: "https://guess-the-quote-mauve.vercel.app"
   },
   {
     name: "Plot Twist - Guess the Movie",
     img: "plotTwist.png",
     sharetext: "How many movies can you get right?\n\nframe by @aaronv.eth",
-    url: "https://plot-twist-nine.vercel.app",
-    initialState: { stage: 'initial' }
+    url: "https://plot-twist-nine.vercel.app"
   },
   {
     name: "This Day in History",
     img: "onthisday.png",
     sharetext: "Check out what happened this day in history\n\nframe by @aaronv.eth",
-    url: "https://time-capsule-jade.vercel.app",
-    initialState: { stage: 'initial' }
+    url: "https://time-capsule-jade.vercel.app"
   },
   {
     name: "Flowers Galore",
