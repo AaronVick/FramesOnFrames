@@ -18,15 +18,14 @@ export default async function handler(req, res) {
     // Share link
     const shareText = encodeURIComponent(frames[frameIndex].sharetext);
     const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(frames[frameIndex].url)}`;
-    return res.redirect(302, shareLink);
+    return res.redirect(302, shareLink);  // Redirect to the share link
   }
 
   // Get the current frame
   const currentFrame = frames[frameIndex] || frames[0];
-  
-  // Construct the image URL directly from frameData
-  const imageUrl = `${currentFrame.img}`;
+  const imageUrl = `${currentFrame.img}`;  // Use image directly from frameData
 
+  // Construct the HTML with proper Farcaster meta tags
   const html = `
     <html>
       <head>
