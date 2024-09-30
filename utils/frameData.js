@@ -77,4 +77,16 @@ export const frames = [
     sharetext: "Check on the latest Crypto News via Coindesk\n\nframe by @aaronv.eth",
     url: "https://coin-desk-news-frame.vercel.app"
   }
+  {
+    name: "Guess the Anime Character",
+    img: "animeGame.png",
+    sharetext: "How many anime characters do you really know!\n\nframe by @aaronv.eth",
+    url: "https://animeguess.vercel.app"
+  },
+  {
+    name: "Guess the Pokemon Character",
+    img: "pokeMain.png",
+    sharetext: "How many Pokemon characters do you really know!\n\nframe by @aaronv.eth",
+    url: "https://guess-pokemon-orpin.vercel.app"
+  },
 ];
