@@ -76,7 +76,7 @@ export const frames = [
     img: "coindeskrss.png",
     sharetext: "Check on the latest Crypto News via Coindesk\n\nframe by @aaronv.eth",
     url: "https://coin-desk-news-frame.vercel.app"
-  }
+  },
   {
     name: "Guess the Anime Character",
     img: "animeGame.png",
