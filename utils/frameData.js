@@ -89,4 +89,10 @@ export const frames = [
     sharetext: "How many Pokemon characters do you really know!\n\nframe by @aaronv.eth",
     url: "https://guess-pokemon-orpin.vercel.app"
   },
+  {
+    name: "Guess what's in space",
+    img: "spaceGame.png",
+    sharetext: "Do you really know what's out in space?!\n\nframe by @aaronv.eth",
+    url: "https://space-guessing-game.vercel.app/"
+  }
 ];
