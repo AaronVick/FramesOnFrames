@@ -36,6 +36,12 @@ export const frames = [
     url: "https://flower-flip.vercel.app"
   },
   {
+    name: "Sports Trivia",
+    img: "sportsGame.png",
+    sharetext: "Love sports?\n\nShow off your knowledge with Sports trivia.\n\nframe by @aaronv.eth",
+    url: "https://sports-trivia-zeta.vercel.app/"
+  },
+  {
     name: "Dad Jokes",
     img: "dad_jokes.png",
     sharetext: "get a laugh with some dad jokes!\n\nframe by @aaronv.eth",
@@ -90,7 +96,7 @@ export const frames = [
     url: "https://guess-pokemon-orpin.vercel.app"
   },
   {
-    name: "Guess what's in space",
+    name: "Guess what's in Space",
     img: "spaceGame.png",
     sharetext: "Do you really know what's out in space?!\n\nframe by @aaronv.eth",
     url: "https://space-guessing-game.vercel.app/"
