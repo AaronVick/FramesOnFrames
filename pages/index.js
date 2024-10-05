@@ -5,9 +5,9 @@ import { frames } from '../utils/frameData';
 export default function FrameNavigator({ frameIndex = -1 }) {
   const baseUrl = 'https://frames-on-frames.vercel.app';
 
-  const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth`);
-  const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(baseUrl)}`;
-
+  const shareText = encodeURIComponent(`Check out the frames built by @aaronv.eth: ${baseUrl}`);
+  const shareLink = `https://warpcast.com/~/compose?text=${shareText}`;
+ 
   const currentFrame = frameIndex === -1 ? null : frames[frameIndex];
   const imageUrl = frameIndex === -1 ? `${baseUrl}/aarons_frames.png` : `${currentFrame.url}/${currentFrame.img}`;
 
