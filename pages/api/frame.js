@@ -17,8 +17,10 @@ export default async function handler(req, res) {
     frameIndex = (frameIndex + 1) % frames.length;
   }
 
-  // Fetch the correct frame based on frameIndex
+  // Get current frame
   const currentFrame = frames[frameIndex];
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://frames-on-frames.vercel.app';
+  const imageUrl = `${currentFrame.url.replace(/\/$/, '')}/${currentFrame.img.replace(/^\//, '')}`;
 
   // Create the share link for the button
   const shareText = encodeURIComponent(currentFrame.sharetext);
@@ -29,7 +31,7 @@ export default async function handler(req, res) {
     <html>
       <head>
         <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="${currentFrame.img}" />
+        <meta property="fc:frame:image" content="${imageUrl}" />
         <meta property="fc:frame:button:1" content="Previous" />
         <meta property="fc:frame:button:2" content="Share ${currentFrame.name}" />
         <meta property="fc:frame:button:3" content="Next" />
