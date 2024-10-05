@@ -16,6 +16,10 @@ export default async function handler(req, res) {
     // Next button pressed
     frameIndex = (frameIndex + 1) % frames.length;
   }
+
+  // Fetch the correct frame based on frameIndex
+  const currentFrame = frames[frameIndex];
+
   // Create the share link for the button
   const shareText = encodeURIComponent(currentFrame.sharetext);
   const shareLink = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(currentFrame.url)}`;
@@ -25,7 +29,7 @@ export default async function handler(req, res) {
     <html>
       <head>
         <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="${imageUrl}" />
+        <meta property="fc:frame:image" content="${currentFrame.img}" />
         <meta property="fc:frame:button:1" content="Previous" />
         <meta property="fc:frame:button:2" content="Share ${currentFrame.name}" />
         <meta property="fc:frame:button:3" content="Next" />
