@@ -17,11 +17,9 @@ export default async function handler(req, res) {
     frameIndex = (frameIndex + 1) % frames.length;
   }
 
-  // Get current frame
-  const currentFrame = frames[frameIndex];
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://frames-on-frames.vercel.app';
-  const imageUrl = `${currentFrame.url.replace(/\/$/, '')}/${currentFrame.img.replace(/^\//, '')}`;
-
+ // Create the share link for the button
+ const shareText = encodeURIComponent(currentFrame.sharetext);
+ const shareLink = https://warpcast.com/~/compose?text=${shareText}&embeds[]=${encodeURIComponent(currentFrame.url)};
   // Create the share link for the button
   const shareText = encodeURIComponent(`${currentFrame.sharetext} ${currentFrame.url}`);
   const shareLink = `https://warpcast.com/~/compose?text=${shareText}`;
