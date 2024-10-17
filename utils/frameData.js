@@ -2,8 +2,14 @@ export const frames = [
   {
     name: "Empower Goal",
     img: "empower.png",  
-    sharetext: "Set your public goal with the /empower frame by @aaronv.eth",
+    sharetext: "Set your public goal with the /empower\n\n frame by @aaronv.eth",
     url: "https://empower-goal-tracker.vercel.app"
+  },
+  {
+    name: "Sports Trivia",
+    img: "sportsGame.png",  
+    sharetext: "Can you guess 20 in a row?\n\n frame by @aaronv.eth",
+    url: "https://sports-trivia-zeta.vercel.app/"
   },
   {
     name: "War - Card Game",
