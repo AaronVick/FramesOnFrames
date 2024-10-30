@@ -90,6 +90,13 @@ export const frames = [
     url: "https://animeguess.vercel.app"
   },
   {
+    name: "Take the Challenge",
+    img: "challenge.png",
+    sharetext: "Can't think of what to share? Share some of your thoughts!\n\nframe by @aaronv.eth",
+    url: "https://takethechallenge.vercel.app"
+  },
+
+  {
     name: "Guess the Pokemon Character",
     img: "pokeMain.png",
     sharetext: "How many Pokemon characters do you really know!\n\nframe by @aaronv.eth",
